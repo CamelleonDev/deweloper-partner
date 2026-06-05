@@ -132,7 +132,7 @@ Record staging URL here after deploy: `________________________`
 |------|-------|--------|-------|
 | Docker + Railway config in repo | Agent | Done | commit `c529067` |
 | `railway login` | Human | Pending | No `~/.railway` token found |
-| Git push to GitHub | Human | Pending | No `git remote` configured |
+| Git push to GitHub | Human | Blocked | Remote `git@github.com:kamilkowalski/deweloper-partner.git` added; push failed — SSH host key for github.com (fix `known_hosts` or use HTTPS remote) |
 | Railway project + MySQL + Redis | Human | Pending | After login |
 | GitHub connect + first deploy | Human | Pending | After push |
 | Verification checklist | Human | Pending | Fill staging URL above |
