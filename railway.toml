@@ -5,6 +5,7 @@ dockerBuildTarget = "web"
 
 [deploy]
 startCommand = "/usr/local/bin/entrypoint-web.sh"
+preDeployCommand = "chmod +x ./railway/init-app.sh && ./railway/init-app.sh"
 healthcheckPath = "/up"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
