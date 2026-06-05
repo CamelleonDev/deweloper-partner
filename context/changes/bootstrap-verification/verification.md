@@ -11,6 +11,7 @@ phase_3_status: ok
 audit_command: "null"
 handoff_amended_at: 2026-05-26T18:00:00Z
 infrastructure_decided_at: 2026-06-04T12:00:00Z
+deploy_plan_at: 2026-06-04T12:00:00Z
 ---
 
 ## Hand-off
@@ -42,7 +43,7 @@ hints:
 
 Deweloper Partner is a PHP multi-tenant SaaS with auth, Excel/CSV import, queues, and AI chat. Laravel remains the application framework.
 
-**MySQL** on every environment (local Compose, Railway staging, dedyk production). **MVP/staging: Railway** (managed MySQL, Redis, worker, cron). **Production: dedicated server + Docker Compose** (PHP 8.4, nginx, MySQL, Redis). Full decision: `@context/foundation/infrastructure.md`. Bootstrapper did not ship Docker or Railway config — follow-ups below.
+**MySQL** on every environment (local Compose, Railway staging, dedyk production). **MVP/staging: Railway** (managed MySQL, Redis, worker, cron). **Production: dedicated server + Docker Compose**. Full decision: `@context/foundation/infrastructure.md`. Deploy runbook: `@context/deployment/deploy-plan.md`.
 
 ## Pre-scaffold verification
 
@@ -71,7 +72,7 @@ Recency: no recency signal available for Laravel docs URL. Proceeding.
 
 **Notes**: Scaffold used PHP 8.4.14 (`/usr/local/Cellar/php/8.4.14_1/bin/php`) because system default `php` is 7.4.33, which does not satisfy Laravel 13's `>= 8.4.0` requirement. `context/` preserved verbatim.
 
-**Docker / Railway**: not scaffolded. See **Gaps and follow-up**.
+**Docker / Railway**: scaffolded in commit `c529067`; live Railway deploy pending login + GitHub push — see deploy-plan.
 
 ## Post-scaffold audit
 
@@ -91,8 +92,8 @@ Recency: no recency signal available for Laravel docs URL. Proceeding.
 | deployment_target          | fly                                | **self-host** (dedyk Compose prod) |
 | staging_platform           | —                                  | **railway**                        |
 | database                   | —                                  | **mysql**                          |
-| ci_provider                | github-actions                     | github-actions                     |
-| ci_default_flow            | auto-deploy-on-merge               | auto-deploy-on-merge (→ Railway staging) |
+| ci_provider                | github-actions                     | github-actions (tests later; deploy via Railway GitHub) |
+| ci_default_flow            | auto-deploy-on-merge               | auto-deploy-on-merge (Railway on push to main) |
 | has_auth                   | true                               | true                               |
 | has_payments               | false                              | false                              |
 | has_realtime               | false                              | false                              |
@@ -103,21 +104,21 @@ Recency: no recency signal available for Laravel docs URL. Proceeding.
 
 | Gap | Status | Action |
 | --- | ------ | ------ |
-| Infrastructure platform choice | **Fixed** in `context/foundation/infrastructure.md` | Railway + MySQL (MVP/staging); dedyk Compose + MySQL (prod) |
-| Docker / Compose not in repo | **Open** | Add `docker-compose.yml` + `Dockerfile`: app, nginx, **mysql**, redis, queue worker |
-| Railway project / services | **Open** | MySQL + Redis on canvas; web, worker, cron; `DB_CONNECTION=mysql`; GitHub Actions → staging |
-| No `Dockerfile` or `docker-compose.yml` in repo | **Open** | Same as above; align with `tech-stack.md` |
-| Host PHP 7.4 vs Laravel 13 | **Open** | Prefer `docker compose exec` for `artisan` / `composer` |
-| Fly.io deploy | **Superseded** | Fly remains PaaS fallback only (`infrastructure.md` runner-up) |
-| Postgres as default in Railway docs | **N/A — avoided** | Use **MySQL** on Railway; do not use Postgres on staging |
-| `AGENTS.md` | **Done** | Repo root onboarding doc exists |
+| Infrastructure platform choice | **Fixed** | `context/foundation/infrastructure.md` |
+| Docker / Compose in repo | **Done** | `Dockerfile`, `docker-compose.yml` (commit `c529067`) |
+| Railway deploy plan | **Done** | `context/deployment/deploy-plan.md` |
+| Railway project live | **Open** | `railway login`, push to GitHub, connect repo — `@context/deployment/deploy-plan.md` |
+| Host PHP 7.4 vs Laravel 13 | **Open** | Use `docker compose exec app php artisan …` |
+| Fly.io deploy | **Superseded** | PaaS fallback only |
+| Postgres on staging | **Avoided** | Railway **MySQL** only |
+| `AGENTS.md` | **Done** | Repo root |
 
-Recommended Compose services: **app** (PHP 8.4), **web** (nginx), **mysql**, **redis**, **queue** (`php artisan queue:work`). Optional **scheduler** container or cron on dedyk for daily XML/MD5 batch.
+Recommended Compose services: **app**, **nginx**, **mysql**, **redis**, **queue**, **scheduler**.
 
 ## Next steps
 
-1. Add `docker-compose.yml` (+ `Dockerfile`) with **MySQL** — `@context/foundation/tech-stack.md`.
-2. Point `.env` at Docker hostnames (`DB_HOST=mysql`, `DB_CONNECTION=mysql`, `REDIS_HOST=redis`).
-3. Provision Railway project: MySQL, Redis, web/worker/cron — `@context/foundation/infrastructure.md`.
-4. GitHub Actions: auto-deploy to Railway on merge; separate approved workflow for dedyk prod later.
-5. Document prod cutover in `context/deployment/deploy-plan.md` (MySQL dump/restore, DNS, rollback).
+1. `git remote add origin <url>` && `git push -u origin main`
+2. `npx @railway/cli login` && `./scripts/railway-staging-setup.sh`
+3. Railway canvas: MySQL + Redis + app/worker/cron — deploy-plan checklist
+4. Connect GitHub on Railway `app` service (auto-deploy on `main`)
+5. Run verification checklist in deploy-plan; record staging URL
