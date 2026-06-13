@@ -1,12 +1,5 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
-# Railway does not support dockerBuildTarget here — default stage is the LAST stage in Dockerfile (web)
-
-[deploy]
-startCommand = "/usr/local/bin/entrypoint-web.sh"
-preDeployCommand = "chmod +x ./railway/init-app.sh && ./railway/init-app.sh"
-healthcheckPath = "/up"
-healthcheckTimeout = 300
-restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 3
+# Deploy settings are per-service in Railway UI — do NOT put [deploy] here;
+# it locks the same start/pre-deploy/healthcheck on app, worker, and cron.
