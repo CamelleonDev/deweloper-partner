@@ -46,11 +46,11 @@ RUN mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cac
 
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/99-laravel.ini
 
-# cli must come before web — Railway ignores dockerBuildTarget and builds the last stage
-FROM app AS cli
-
 COPY railway /var/www/html/railway
 RUN chmod +x /var/www/html/railway/*.sh
+
+# cli stage kept for documentation; Railway always builds the LAST stage (web)
+FROM app AS cli
 
 CMD ["php-fpm", "-F"]
 
