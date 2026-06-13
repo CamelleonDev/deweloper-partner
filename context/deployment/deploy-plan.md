@@ -56,7 +56,7 @@ npx @railway/cli login
 | `Redis` | Database / Redis | Sessions, cache, queue |
 | `app` | GitHub + Dockerfile | `railway.toml`; health `/up` |
 | `worker` | Same repo, target `cli` | Start: `./railway/run-worker.sh` |
-| `cron` | Cron job `*/1 * * * *` | Start: `./railway/run-cron.sh` |
+| `cron` | Same repo (long-running) | Start: `chmod +x ./railway/run-cron.sh && ./railway/run-cron.sh` (loop every 60s; not Railway Cron Schedule) |
 
 ### 4. Environment variables (shared)
 
