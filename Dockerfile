@@ -46,6 +46,10 @@ RUN mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cac
 
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/99-laravel.ini
 
+COPY docker/entrypoint-worker.sh /usr/local/bin/entrypoint-worker.sh
+COPY docker/entrypoint-cron.sh /usr/local/bin/entrypoint-cron.sh
+RUN chmod +x /usr/local/bin/entrypoint-worker.sh /usr/local/bin/entrypoint-cron.sh
+
 COPY railway /var/www/html/railway
 RUN chmod +x /var/www/html/railway/*.sh
 

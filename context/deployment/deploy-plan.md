@@ -55,8 +55,8 @@ npx @railway/cli login
 | `MySQL` | Database → Add MySQL | Not Postgres |
 | `Redis` | Database / Redis | Sessions, cache, queue |
 | `app` | GitHub + Dockerfile | `railway.toml`; health `/up` |
-| `worker` | Same repo, target `cli` | Start: `./railway/run-worker.sh` |
-| `cron` | Same repo (long-running) | Start: `chmod +x ./railway/run-cron.sh && ./railway/run-cron.sh` (loop every 60s; not Railway Cron Schedule) |
+| `worker` | Same repo, target `cli` | Start: `/usr/local/bin/entrypoint-worker.sh` |
+| `cron` | Same repo (long-running) | Start: `/usr/local/bin/entrypoint-cron.sh` (no Cron Schedule in UI) |
 
 ### 4. Environment variables (shared)
 
