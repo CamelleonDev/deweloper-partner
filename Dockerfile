@@ -46,6 +46,14 @@ RUN mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cac
 
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/99-laravel.ini
 
+# cli must come before web — Railway ignores dockerBuildTarget and builds the last stage
+FROM app AS cli
+
+COPY railway /var/www/html/railway
+RUN chmod +x /var/www/html/railway/*.sh
+
+CMD ["php-fpm", "-F"]
+
 FROM app AS web
 
 RUN apt-get update && apt-get install -y --no-install-recommends nginx \
@@ -58,10 +66,3 @@ RUN chmod +x /usr/local/bin/entrypoint-web.sh
 EXPOSE 8080
 
 CMD ["/usr/local/bin/entrypoint-web.sh"]
-
-FROM app AS cli
-
-COPY railway /var/www/html/railway
-RUN chmod +x /var/www/html/railway/*.sh
-
-CMD ["php-fpm", "-F"]

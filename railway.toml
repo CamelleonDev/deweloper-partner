@@ -1,7 +1,7 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
-dockerBuildTarget = "web"
+# Railway does not support dockerBuildTarget here — default stage is the LAST stage in Dockerfile (web)
 
 [deploy]
 startCommand = "/usr/local/bin/entrypoint-web.sh"
